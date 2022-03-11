@@ -8,8 +8,12 @@ namespace kraken::csv {
 
 void write_csv(std::ostream& output, csv_type const& csv) {
     for (const auto& line : csv) {
-        std::ranges::copy(line,
-                          std::ostream_iterator<std::string>{output, ","});
+        bool first = true;
+        for (const auto& atom : line) {
+            output << (first ? "" : ",") << atom;
+            first = false;
+        };
+        output << '\n';
     }
 }
 

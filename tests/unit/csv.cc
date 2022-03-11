@@ -48,7 +48,7 @@ TEST(write_csv, empty) {
     ASSERT_EQ(output.str(), expected);
 }
 
-TEST(write_csv, DISABLED_single_line) {
+TEST(write_csv, single_line) {
     auto const csv = csv_type{
         {"a", "b", "c"},
     };
@@ -58,7 +58,7 @@ TEST(write_csv, DISABLED_single_line) {
     ASSERT_EQ(output.str(), expected);
 }
 
-TEST(write_csv, DISABLED_multiple_lines) {
+TEST(write_csv, multiple_lines) {
     auto const csv = csv_type{
         {"a", "b", "c"},
         {"1", "2", "3"},
