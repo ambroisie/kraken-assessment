@@ -1,4 +1,5 @@
 add_library(csv STATIC
+  csv.hh
   read-csv.cc
   read-csv.hh
 )

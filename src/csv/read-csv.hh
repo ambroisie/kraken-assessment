@@ -1,8 +1,8 @@
 #pragma once
 
 #include <iosfwd>
-#include <string>
-#include <vector>
+
+#include "csv/csv.hh"
 
 namespace kraken::csv {
 
@@ -13,12 +13,6 @@ enum class CsvHeader {
     /// Kepts.
     KEEP,
 };
-
-/// Represent a raw CSV line as a vector of strings.
-using csv_line_type = std::vector<std::string>;
-
-/// Represent a raw CSV file as a vector of raw CSV lines
-using csv_type = std::vector<csv_line_type>;
 
 /// Parse a CSV file from an input-stream, return a vector of parsed lines.
 csv_type read_csv(std::istream& input, CsvHeader header = CsvHeader::SKIP);
