@@ -3,13 +3,14 @@ find_package(GTest)
 if (${GTest_FOUND})
 include(GoogleTest)
 
-add_executable(base_test base.cc)
-target_link_libraries(base_test PRIVATE common_options)
+add_executable(csv_test csv.cc)
+target_link_libraries(csv_test PRIVATE common_options)
 
-target_link_libraries(base_test PRIVATE
+target_link_libraries(csv_test PRIVATE
+  csv
   GTest::gtest
   GTest::gtest_main
 )
 
-gtest_discover_tests(base_test)
+gtest_discover_tests(csv_test)
 endif (${GTest_FOUND})
