@@ -31,11 +31,31 @@ test_file() {
     fi
 }
 
+test_file_trades() {
+    if ! diff="$(diff <("$KRAKEN" --enable-trade < "$DATA_DIR/inputs/$1.in.csv") "$DATA_DIR/outputs/$1.trades.out.csv")"; then
+        ((FAILURES += 1))
+        echo "$1 (trades): FAIL"
+        if [ -n "$VERBOSE" ]; then
+            printf '%s\n' "$diff"
+        fi
+    else
+        ((SUCCESSES += 1))
+        echo "$1 (trades): OK"
+    fi
+}
+
 for test_name in "$DATA_DIR"/inputs/*.in.csv; do
     test_name="$(basename "$test_name")"
     test_name="${test_name%%.in.csv}"
 
     test_file "$test_name"
+done
+
+for test_name in "$DATA_DIR"/outputs/*.trades.out.csv; do
+    test_name="$(basename "$test_name")"
+    test_name="${test_name%%.trades.out.csv}"
+
+    test_file_trades "$test_name"
 done
 
 printf '\nSummary: %d successes, %d failures\n' "$SUCCESSES" "$FAILURES"
