@@ -34,7 +34,8 @@ the standard output. For example
 kraken < ./data/inputs/balanced-book-1.in.csv
 ```
 
-You can use `--enable-trade` to enable trade matching.
+You can use `--enable-trade` to enable trade matching. Be careful, it has not
+been as carefully tested, a wild `assert` could stop your session short.
 
 ## Architecture
 
