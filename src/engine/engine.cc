@@ -87,8 +87,9 @@ private:
     TopInfo top_info_{};
 };
 
-Engine::Engine(std::shared_ptr<EngineListener> listener)
-    : listener_(listener) {}
+Engine::Engine(std::shared_ptr<EngineListener> listener,
+               CrossBehaviour cross_behaviour)
+    : listener_(listener), cross_behaviour_(cross_behaviour) {}
 
 void Engine::process_orders(std::vector<Order> const& orders) {
     for (auto const& order : orders) {
@@ -109,8 +110,31 @@ void Engine::operator()(TradeOrder const& trade_order) {
             auto& [_, bid_map] = *bid_map_it;
             if (bid_map.size() > 0
                 && bid_map.begin()->first >= trade_order.price) {
-                // FIXME: handle matching if enabled
-                listener_->on_rejection(trade_order.user, trade_order.id);
+                if (cross_behaviour_ == CrossBehaviour::REJECT) {
+                    listener_->on_rejection(trade_order.user, trade_order.id);
+                } else {
+                    // FIXME: assumes a single trade for the order
+                    // FIXME: assumes no remaining orders on both sides
+                    auto matching = bid_map.begin();
+                    auto const& bid_order = matching->second;
+
+                    auto const matching_quantity
+                        = std::min(bid_order.quantity, trade_order.quantity);
+                    // NOTE: Pick the asking price for matching
+                    auto const matching_price = trade_order.price;
+
+                    listener_->on_acknowledgement(trade_order.user,
+                                                  trade_order.id);
+                    listener_->on_match(bid_order.user, bid_order.id,
+                                        trade_order.user, trade_order.id,
+                                        matching_price, matching_quantity);
+                    assert(matching_quantity == bid_order.quantity
+                           && "multiple matches not implemented");
+                    assert(matching_quantity == trade_order.quantity
+                           && "multiple matches not implemented");
+
+                    bid_map.erase(matching);
+                }
                 return;
             }
         }
@@ -124,8 +148,30 @@ void Engine::operator()(TradeOrder const& trade_order) {
             auto& [_, ask_map] = *ask_map_it;
             if (ask_map.size() > 0
                 && ask_map.begin()->first <= trade_order.price) {
-                // FIXME: handle matching if enabled
-                listener_->on_rejection(trade_order.user, trade_order.id);
+                if (cross_behaviour_ == CrossBehaviour::REJECT) {
+                    listener_->on_rejection(trade_order.user, trade_order.id);
+                } else {
+                    // FIXME: assumes a single trade for the order
+                    // FIXME: assumes no remaining orders on both sides
+                    auto matching = ask_map.begin();
+                    // NOTE: Pick the asking price for matching
+                    auto const& [matching_price, ask_order] = *matching;
+
+                    auto const matching_quantity
+                        = std::min(ask_order.quantity, trade_order.quantity);
+
+                    listener_->on_acknowledgement(trade_order.user,
+                                                  trade_order.id);
+                    listener_->on_match(trade_order.user, trade_order.id,
+                                        ask_order.user, ask_order.id,
+                                        matching_price, matching_quantity);
+                    assert(matching_quantity == ask_order.quantity
+                           && "multiple matches not implemented");
+                    assert(matching_quantity == trade_order.quantity
+                           && "multiple matches not implemented");
+
+                    ask_map.erase(matching);
+                }
                 return;
             }
         }

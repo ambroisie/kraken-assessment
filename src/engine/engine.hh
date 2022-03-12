@@ -9,12 +9,21 @@
 
 namespace kraken::engine {
 
+/// Which behaviour on cross orders.
+enum class CrossBehaviour {
+    /// Reject the crossing order.
+    REJECT,
+    /// Make the trade with the matching order(s).
+    MATCH,
+};
+
 struct CallbackOnTopOfBookChange;
 struct EngineListener;
 
 /// Matching engine which processes orders and keeps the book up-to-date.
 struct Engine {
-    Engine(std::shared_ptr<EngineListener> listener);
+    Engine(std::shared_ptr<EngineListener> listener,
+           CrossBehaviour cross_behaviour = CrossBehaviour::REJECT);
 
     /// Process orders, triggerring the listener on each event.
     void process_orders(std::vector<Order> const& orders);
@@ -25,6 +34,7 @@ private:
     void operator()(FlushOrder const& flush_order);
 
     std::shared_ptr<EngineListener> listener_;
+    CrossBehaviour cross_behaviour_;
 
     // Symbol, price, side are implicit given the way the book is represented
     struct OrderMetaData {
