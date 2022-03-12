@@ -6,6 +6,7 @@
 #include "parse/parse.hh"
 
 // Allow namespace pollution in tests for convenience
+using namespace kraken;
 using namespace kraken::parse;
 
 namespace {

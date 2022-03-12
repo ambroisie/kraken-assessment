@@ -5,7 +5,7 @@
 
 #include "utils/strong-type.hh"
 
-namespace kraken::parse {
+namespace kraken {
 
 /// Which side the order is on.
 enum class Side {
@@ -68,4 +68,4 @@ struct FlushOrder {
 
 using Order = std::variant<TradeOrder, CancelOrder, FlushOrder>;
 
-} // namespace kraken::parse
+} // namespace kraken
