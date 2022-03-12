@@ -41,46 +41,42 @@ struct CallbackOnTopOfBookChange {
     }
 
 private:
+    using info_type = std::optional<std::pair<Price, Quantity>>;
+
     struct TopInfo {
-        std::optional<std::pair<Price, Quantity>> asks;
-        std::optional<std::pair<Price, Quantity>> bids;
+        info_type asks;
+        info_type bids;
     };
 
     TopInfo calculate_top() const {
         auto info = TopInfo{};
 
-        if (auto const bid_it = engine_.bids_.find(symbol_);
-            bid_it != engine_.bids_.end()) {
-            auto const& [_, bid_map] = *bid_it;
-
-            if (bid_map.size() > 0) {
-                auto const price = bid_map.begin()->first;
+        auto const make_top_for = [](auto const& order_map) -> info_type {
+            if (order_map.size() > 0) {
+                auto const price = order_map.begin()->first;
                 int quantity = 0;
-                auto const [begin, end] = bid_map.equal_range(price);
+                auto const [begin, end] = order_map.equal_range(price);
 
                 for (auto it = begin; it != end; ++it) {
                     quantity += int(it->second.quantity);
                 }
 
-                info.bids = {price, Quantity(quantity)};
+                return std::make_pair(price, Quantity(quantity));
             }
+
+            return std::nullopt;
+        };
+
+        if (auto const bid_it = engine_.bids_.find(symbol_);
+            bid_it != engine_.bids_.end()) {
+            auto const& [_, bid_map] = *bid_it;
+            info.bids = make_top_for(bid_map);
         }
 
         if (auto const ask_it = engine_.asks_.find(symbol_);
             ask_it != engine_.asks_.end()) {
             auto const& [_, ask_map] = *ask_it;
-
-            if (ask_map.size() > 0) {
-                auto const price = ask_map.begin()->first;
-                int quantity = 0;
-                auto const [begin, end] = ask_map.equal_range(price);
-
-                for (auto it = begin; it != end; ++it) {
-                    quantity += int(it->second.quantity);
-                }
-
-                info.asks = {price, Quantity(quantity)};
-            }
+            info.asks = make_top_for(ask_map);
         }
 
         return info;
