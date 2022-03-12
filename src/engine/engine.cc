@@ -139,47 +139,68 @@ void Engine::operator()(TradeOrder const& trade_order) {
         break;
     }
 
+    // Record reverse-lookup info for faster cancelling
+    cancel_reverse_info_.insert({
+        {
+            trade_order.user,
+            trade_order.id,
+        },
+        {
+            trade_order.side,
+            trade_order.symbol,
+            trade_order.price,
+        },
+    });
+
     listener_->on_acknowledgement(trade_order.user, trade_order.id);
 }
 
 void Engine::operator()(CancelOrder const& cancel_order) {
-    // Assume that the input is well-behaved,
-    // no duplicate (userId, userOrderId) values.
     auto const matches_order = [&](auto const& data) {
         return data.second.user == cancel_order.user
             && data.second.id == cancel_order.id;
     };
 
-    for (auto& [symbol, bid_map] : bids_) {
-        auto const it = std::ranges::find_if(bid_map, matches_order);
-        if (it != bid_map.end()) {
-            // Set-up automatic call-back in case top-of-book changes
-            auto _ = CallbackOnTopOfBookChange(symbol, *this);
+    if (auto it = cancel_reverse_info_.find(cancel_order);
+        it != cancel_reverse_info_.end()) {
+        auto const& [_, info] = *it;
 
-            bid_map.erase(it);
-            listener_->on_acknowledgement(cancel_order.user, cancel_order.id);
-            return;
-        }
-    }
+        // Set-up automatic call-back in case top-of-book changes
+        auto __ = CallbackOnTopOfBookChange(info.symbol, *this);
 
-    for (auto& [symbol, ask_map] : asks_) {
-        auto const it = std::ranges::find_if(ask_map, matches_order);
-        if (it != ask_map.end()) {
-            // Set-up automatic call-back in case top-of-book changes
-            auto _ = CallbackOnTopOfBookChange(symbol, *this);
-
+        switch (info.side) {
+        case Side::ASK: {
+            auto& ask_map = asks_[info.symbol];
+            auto const [begin, end] = ask_map.equal_range(info.price);
+            auto it = std::find_if(begin, end, matches_order);
+            if (it == end) {
+                listener_->on_bad_order(cancel_order.user, cancel_order.id);
+                return;
+            }
             ask_map.erase(it);
-            listener_->on_acknowledgement(cancel_order.user, cancel_order.id);
-            return;
+            break;
         }
+        case Side::BID: {
+            auto& bid_map = bids_[info.symbol];
+            auto const [begin, end] = bid_map.equal_range(info.price);
+            auto it = std::find_if(begin, end, matches_order);
+            if (it == end) {
+                listener_->on_bad_order(cancel_order.user, cancel_order.id);
+                return;
+            }
+            bid_map.erase(it);
+            break;
+        }
+        }
+        cancel_reverse_info_.erase(it);
+        listener_->on_acknowledgement(cancel_order.user, cancel_order.id);
     }
-
-    listener_->on_bad_order(cancel_order.user, cancel_order.id);
 }
 
 void Engine::operator()(FlushOrder const&) {
     bids_.clear();
     asks_.clear();
+    cancel_reverse_info_.clear();
 
     listener_->on_flush();
 }

@@ -41,6 +41,15 @@ private:
 
     std::map<Symbol, instrument_side_data<std::greater<void>>> bids_;
     std::map<Symbol, instrument_side_data<std::less<void>>> asks_;
+
+    // Map cancel information to allow faster lookups
+    struct CancelReverseInfo {
+        Side side;
+        Symbol symbol;
+        Price price;
+    };
+
+    std::map<CancelOrder, CancelReverseInfo> cancel_reverse_info_;
 };
 
 } // namespace kraken::engine
