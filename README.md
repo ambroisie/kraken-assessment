@@ -34,6 +34,8 @@ the standard output. For example
 kraken < ./data/inputs/balanced-book-1.in.csv
 ```
 
+You can use `--enable-trade` to enable trade matching.
+
 ## Architecture
 
 ### Libraries
