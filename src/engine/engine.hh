@@ -39,8 +39,8 @@ private:
     template <typename Order>
     using instrument_side_data = std::multimap<Price, OrderMetaData, Order>;
 
-    std::map<Symbol, instrument_side_data<std::less<void>>> bids_;
-    std::map<Symbol, instrument_side_data<std::greater<void>>> asks_;
+    std::map<Symbol, instrument_side_data<std::greater<void>>> bids_;
+    std::map<Symbol, instrument_side_data<std::less<void>>> asks_;
 };
 
 } // namespace kraken::engine

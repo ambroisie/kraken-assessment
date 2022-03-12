@@ -112,7 +112,7 @@ void Engine::operator()(TradeOrder const& trade_order) {
             bid_map_it != bids_.end()) {
             auto& [_, bid_map] = *bid_map_it;
             if (bid_map.size() > 0
-                && bid_map.begin()->first <= trade_order.price) {
+                && bid_map.begin()->first >= trade_order.price) {
                 // FIXME: handle matching if enabled
                 listener_->on_rejection(trade_order.user, trade_order.id);
                 return;
@@ -127,7 +127,7 @@ void Engine::operator()(TradeOrder const& trade_order) {
             ask_map_it != asks_.end()) {
             auto& [_, ask_map] = *ask_map_it;
             if (ask_map.size() > 0
-                && ask_map.begin()->first >= trade_order.price) {
+                && ask_map.begin()->first <= trade_order.price) {
                 // FIXME: handle matching if enabled
                 listener_->on_rejection(trade_order.user, trade_order.id);
                 return;
