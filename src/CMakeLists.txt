@@ -10,7 +10,6 @@ add_subdirectory(utils)
 configure_file(config.h.in config.h)
 
 target_link_libraries(kraken PRIVATE
-  book
   csv
   engine
   parse
