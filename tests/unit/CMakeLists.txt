@@ -13,4 +13,16 @@ target_link_libraries(csv_test PRIVATE
 )
 
 gtest_discover_tests(csv_test)
+
+add_executable(parse_test parse.cc)
+target_link_libraries(parse_test PRIVATE common_options)
+
+target_link_libraries(parse_test PRIVATE
+  parse
+  GTest::gtest
+  GTest::gtest_main
+)
+
+gtest_discover_tests(parse_test)
+
 endif (${GTest_FOUND})
