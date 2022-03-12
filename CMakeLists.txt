@@ -13,6 +13,7 @@ target_compile_options(common_options INTERFACE
 )
 target_include_directories(common_options INTERFACE
   src
+  ${CMAKE_BINARY_DIR}/src
 )
 
 add_subdirectory(src)
