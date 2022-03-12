@@ -81,8 +81,13 @@ displays its output as it comes along), etc...
 
 #### Matching trades
 
-The only `FIXME` in the code is where I should handle the matching of trades.
-Seems like a pretty important feature for a *matching* engine.
+The logic used when trade matching is enabled is pretty limited: it wasn't clear
+to me what to do when either of the orders have left-over quantities to be
+fulfilled. More explicit instructions on this point would lead to the removal of
+the final `FIXME`s in the code.
+
+Related to that point, the matching functionality should be tested further,
+rather than just using the two provided examples.
 
 #### Cancelling orders
 
