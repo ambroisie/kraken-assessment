@@ -13,6 +13,8 @@ struct CsvEngineListener : EngineListener {
 
     virtual ~CsvEngineListener();
 
+    csv::csv_type const& output() const;
+
     /// Called when a new trade or cancel order has been acknowledged.
     void on_acknowledgement(User user, UserOrderId id) override;
 

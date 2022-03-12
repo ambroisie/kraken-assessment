@@ -6,6 +6,10 @@ CsvEngineListener::CsvEngineListener() = default;
 
 CsvEngineListener::~CsvEngineListener() = default;
 
+csv::csv_type const& CsvEngineListener::output() const {
+    return output_;
+}
+
 void CsvEngineListener::on_acknowledgement(User user, UserOrderId id) {
     output_.emplace_back(csv::csv_line_type{
         "A",
