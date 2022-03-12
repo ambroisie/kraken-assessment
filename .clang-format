@@ -18,6 +18,9 @@ AccessModifierOffset: -4
 BreakBeforeBinaryOperators: All
 BreakBeforeTernaryOperators: true
 
+# Template declarations should be on their own lines
+AlwaysBreakTemplateDeclarations: Yes
+
 # Aesthetic
 AlignOperands: AlignAfterOperator
 ---
