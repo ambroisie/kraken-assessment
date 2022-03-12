@@ -49,6 +49,8 @@ struct TradeOrder {
     Side side;
     /// User/order id.
     UserOrderId id;
+
+    auto operator<=>(TradeOrder const&) const = default;
 };
 
 struct CancelOrder {
@@ -56,9 +58,13 @@ struct CancelOrder {
     User user;
     /// User/order id to cancel.
     UserOrderId id;
+
+    auto operator<=>(CancelOrder const&) const = default;
 };
 
-struct FlushOrder {};
+struct FlushOrder {
+    auto operator<=>(FlushOrder const&) const = default;
+};
 
 using Order = std::variant<TradeOrder, CancelOrder, FlushOrder>;
 
