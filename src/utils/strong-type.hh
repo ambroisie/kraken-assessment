@@ -11,6 +11,8 @@ struct StrongType {
         return value_;
     }
 
+    auto operator<=>(StrongType<T, Tag> const&) const = default;
+
 private:
     T value_;
 };
