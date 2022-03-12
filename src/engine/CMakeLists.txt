@@ -1,6 +1,8 @@
 add_library(engine STATIC
   csv-engine-listener.cc
   csv-engine-listener.hh
+  engine.cc
+  engine.hh
   engine-listener.cc
   engine-listener.hh
 )
