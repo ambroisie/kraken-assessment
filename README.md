@@ -87,10 +87,18 @@ displays its output as it comes along), etc...
 The logic used when trade matching is enabled is pretty limited: it wasn't clear
 to me what to do when either of the orders have left-over quantities to be
 fulfilled. More explicit instructions on this point would lead to the removal of
-the final `FIXME`s in the code.
+the final `FIXME`s and `assert`s in the code.
 
-Related to that point, the matching functionality should be tested further,
-rather than just using the two provided examples.
+I have added explicit test files of those cases in `data/invalid`.
+
+##### Picking prices
+
+Another improvement that is specific to trade matching would be scripting the
+behaviour when bid/ask prices are not exactly equal when matching trades: the
+current behaviour is to always use the asking price. One could imagine wanting
+to use bid price, or crossing order
+price, or the average (weighted by quantity?) of both prices, etc...
+
 
 #### Cancelling orders
 
