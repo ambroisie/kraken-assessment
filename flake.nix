@@ -43,6 +43,10 @@
             pkg-config
           ];
 
+          buildInputs = with final; [
+            boost
+          ];
+
           checkInputs = with final; [
             gtest
           ];
