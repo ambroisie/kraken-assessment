@@ -9,10 +9,13 @@ add_subdirectory(utils)
 
 configure_file(config.h.in config.h)
 
+find_package(Boost REQUIRED COMPONENTS thread)
+
 target_link_libraries(kraken PRIVATE
   csv
   engine
   parse
+  Boost::thread
 )
 
 install(TARGETS kraken)
