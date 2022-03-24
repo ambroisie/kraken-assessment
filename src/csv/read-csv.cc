@@ -4,10 +4,7 @@
 
 namespace kraken::csv {
 
-namespace {
-
-// for convenience, use a stringstream which does not accept string_view inputs
-csv_line_type parse_line(std::string const& line) {
+csv_line_type read_csv_line(std::string const& line) {
     auto parsed = csv_line_type{};
 
     auto input = std::istringstream(line);
@@ -17,8 +14,6 @@ csv_line_type parse_line(std::string const& line) {
 
     return parsed;
 }
-
-} // namespace
 
 csv_type read_csv(std::istream& input, CsvHeader header) {
     auto parsed = std::vector<csv_line_type>{};
@@ -30,7 +25,7 @@ csv_type read_csv(std::istream& input, CsvHeader header) {
             continue;
         }
 
-        parsed.emplace_back(parse_line(std::move(line)));
+        parsed.emplace_back(read_csv_line(std::move(line)));
     }
 
     return parsed;

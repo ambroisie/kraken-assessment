@@ -14,6 +14,9 @@ enum class CsvHeader {
     KEEP,
 };
 
+/// Parse a single CSV line, no error checking.
+csv_line_type read_csv_line(std::string const& input);
+
 /// Parse a CSV file from an input-stream, return a vector of parsed lines.
 csv_type read_csv(std::istream& input, CsvHeader header = CsvHeader::SKIP);
 
