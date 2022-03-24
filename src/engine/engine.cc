@@ -91,10 +91,14 @@ Engine::Engine(std::shared_ptr<EngineListener> listener,
                CrossBehaviour cross_behaviour)
     : listener_(listener), cross_behaviour_(cross_behaviour) {}
 
+void Engine::process_single_order(Order const& order) {
+    std::visit([this](auto const& trade_order) { (*this)(trade_order); },
+               order);
+}
+
 void Engine::process_orders(std::vector<Order> const& orders) {
     for (auto const& order : orders) {
-        std::visit([this](auto const& trade_order) { (*this)(trade_order); },
-                   order);
+        process_single_order(order);
     }
 }
 

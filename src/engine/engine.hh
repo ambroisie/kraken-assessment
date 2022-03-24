@@ -25,6 +25,9 @@ struct Engine {
     Engine(std::shared_ptr<EngineListener> listener,
            CrossBehaviour cross_behaviour = CrossBehaviour::REJECT);
 
+    /// Process a single order, triggerring the listener appropriately.
+    void process_single_order(Order const& order);
+
     /// Process orders, triggerring the listener on each event.
     void process_orders(std::vector<Order> const& orders);
 
