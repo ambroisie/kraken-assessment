@@ -66,6 +66,6 @@ struct FlushOrder {
     auto operator<=>(FlushOrder const&) const = default;
 };
 
-using Order = std::variant<TradeOrder, CancelOrder, FlushOrder>;
+using Order = std::variant<FlushOrder, TradeOrder, CancelOrder>;
 
 } // namespace kraken
