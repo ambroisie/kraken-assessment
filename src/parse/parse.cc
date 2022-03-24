@@ -57,20 +57,24 @@ CancelOrder cancel_from_raw(csv::csv_line_type const& raw_order) {
 
 } // namespace
 
+Order parse_single_order(csv::csv_line_type const& order) {
+    if (order[0] == "N") {
+        return trade_from_raw(order);
+    } else if (order[0] == "C") {
+        return cancel_from_raw(order);
+    } else if (order[0] == "F") {
+        return FlushOrder{};
+    } else {
+        throw ParseError("Not a valid order");
+    }
+}
+
 std::vector<Order> parse_orders(std::istream& input) {
     auto const raw_orders = read_csv(input, kraken::csv::CsvHeader::KEEP);
     auto orders = std::vector<Order>{};
 
     for (auto const& raw_order : raw_orders) {
-        if (raw_order[0] == "N") {
-            orders.emplace_back(trade_from_raw(raw_order));
-        } else if (raw_order[0] == "C") {
-            orders.emplace_back(cancel_from_raw(raw_order));
-        } else if (raw_order[0] == "F") {
-            orders.emplace_back(FlushOrder{});
-        } else {
-            throw ParseError("Not a valid order");
-        }
+        orders.emplace_back(parse_single_order(raw_order));
     }
 
     return orders;
