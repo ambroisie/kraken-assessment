@@ -43,17 +43,13 @@ int main(int argc, char** argv) {
         }
     });
 
-    auto reader = std::jthread([&]() {
-        for (std::string line; std::getline(std::cin, line);) {
-            auto const order = kraken::parse::parse_single_order(
-                kraken::csv::read_csv_line(line));
-            while (!pending_orders.push(order)) {
-                // FIXME: busy wait
-            }
+    for (std::string line; std::getline(std::cin, line);) {
+        auto const order = kraken::parse::parse_single_order(
+            kraken::csv::read_csv_line(line));
+        while (!pending_orders.push(order)) {
+            // FIXME: busy wait
         }
-        // EOF, bring process orders and bring
-        writer.request_stop();
-    });
-
-    reader.join();
+    }
+    // EOF, process orders and bring down
+    writer.request_stop();
 }
